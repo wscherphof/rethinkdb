@@ -38,7 +38,13 @@ func Connect(db, address string) (err error) {
 }
 
 func tableCreate(table string, opts ...r.TableCreateOpts) (r.WriteResponse, error) {
-	return r.DB(DB).TableCreate(table, opts...).RunWrite(Session)
+	opt := r.TableCreateOpts{}
+	if len(opts) == 1 {
+		opt = opts[0]
+	}
+	opt.Shards = env.GetInt("DB_SHARDS", 1)
+	opt.Replicas = env.GetInt("DB_REPLICAS", 1)
+	return r.DB(DB).TableCreate(table, opt).RunWrite(Session)
 }
 
 func TableCreate(table string) (r.WriteResponse, error) {
