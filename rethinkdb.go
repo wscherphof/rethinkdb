@@ -2,6 +2,7 @@ package rethinkdb
 
 import (
 	r "gopkg.in/gorethink/gorethink.v3"
+	"github.com/wscherphof/env"
 	"strings"
 )
 
@@ -23,8 +24,8 @@ func Connect(db, address string) (err error) {
 	DB = db
 	if Session, err = r.Connect(r.ConnectOpts{
 		Address: address,
-		InitialCap: 10,
-		MaxOpen: 20,
+		InitialCap: env.GetInt("DB_POOL_INITIAL", 100),
+		MaxOpen: env.GetInt("DB_POOL_MAX", 100),
 	}); err != nil {
 		return
 	}
